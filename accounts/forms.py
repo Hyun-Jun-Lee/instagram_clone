@@ -5,7 +5,7 @@ from .models import Profile
 
 
 class SignupForm(UserCreationForm):
-    # ID 조건
+    # ID 조건, 일반적인 CharField는 입력창 한줄짜리기 때문에 widget을 Textarea로 설정
     username = forms.CharField(label='사용자명', widget=forms.TextInput(attrs={
         'pattern': '[a-zA-Z0-9]+',
         'title': '특수문자, 공백 입력불가',
