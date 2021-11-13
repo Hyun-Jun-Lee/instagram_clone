@@ -20,3 +20,47 @@
     
 
 </head>
+
+<body>
+<section id="container">
+
+
+    <header id="header">
+        <section class="h_inner">
+
+            <h1 class="logo">
+                <a href="{% url 'post:post_list' %}">
+                    <div class="sprite_insta_icon"></div>
+                    <div>
+                        <div class="sprite_write_logo"></div>
+                    </div>
+                </a>
+            </h1>
+
+            <div class="search_field">
+                <input type="text" placeholder="검색" tabindex="0">
+
+                <div class="fake_field">
+                    <span class=sprite_small_search_icon></span>
+                    <span>검색</span>
+                </div>
+            </div>
+
+
+            <div class="right_icons">
+                <div class="sprite_camera_icon"><a href="{% url 'post:post_new' %}"></a></div>
+                <div class="sprite_compass_icon"><a href="#"></a></div>
+                <div class="sprite_heart_icon_outline"><a href="follow.html"></a></div>
+                
+            </div>
+        </section>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+</section>
+   
+    
+</body>
+</html>
