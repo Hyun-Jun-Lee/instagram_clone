@@ -35,4 +35,30 @@
             </form>
         </div>
     </div>
+
+<script>
+// django form은 html 랜더링시에 각 필드의 id 값은 'id_필드명' 형식으로 자동 추가됨
+var fileInput = document.querySelector("#id_photo")
+// addEventListener('이벤트종류', '함수이름'): 특정 이벤트 발생 시 특정 함수를 실행
+fileInput.addEventListener('change', handleImage); 
+var canvas = document.getElementById('imageCanvas')
+var ctx = canvas.getContext('2d');
+
+    
+function handleImage(e){
+    var reader = new FileReader();
+    reader.onload = function(event){
+        var img = new Image(); // Image() 함수로 이미지 객채 생성
+        img.onload = function(){ // 이미지 로드 완료 한 후 캔버스 사이즈 지정
+            canvas.width = 300;
+            canvas.height = 300;
+            // 입력된 이미지 (0,0)부터 시작해서 300x300 사이즈
+            ctx.drawImage(img,0,0,300,300); 
+        };
+        img.src = event.target.result; // 이미지 출력
+    };
+    reader.readAsDataURL(e.target.files[0]); // readAsDataURL로  data url 얻고 img 태그의 src에 넣어주면 출력됨
+}
+
+</script>
 {% endblock %}
