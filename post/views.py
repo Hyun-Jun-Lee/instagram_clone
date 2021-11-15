@@ -6,11 +6,13 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 import json
 from .models import Post, Comment
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 # Create your views here.
 
 def post_list(request):
     posts = Post.objects.all()
+    # CommentForm html로 넘겨주기위해
+    comment_form = CommentForm()
     
     # 로그인 상태이면 username 저장, user 모델 내용 확인, profile저장
     if request.user.is_authenticated:
@@ -20,11 +22,13 @@ def post_list(request):
         return render(request, 'post/post_list.html', {
             'user_profile': user_profile,
             'posts': posts,
+            'comment_form': comment_form,
         })
     # 로그인상태가 아니면 post 내용만 보이도록
     else:
         return render(request, 'post/post_list.html', {
             'posts': posts,
+            'comment_form': comment_form,
         })
 
 @login_required  
@@ -111,3 +115,51 @@ def post_bookmark(request):
                'message': message}
 
     return HttpResponse(json.dumps(context), content_type="application/json") 
+
+@login_required
+def comment_new(request):
+    pk = request.POST.get('pk')
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            return render(request, 'post/comment_new_ajax.html', {
+                'comment': comment,   
+            })
+    return redirect("post:post_list")
+
+# detail page에 댓글 달기 기능 추가할 때
+@login_required
+def comment_new_detail(request):
+    pk = request.POST.get('pk')
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            return render(request, 'post/comment_new_detail_ajax.html', {
+                'comment': comment,
+            })
+
+
+@login_required
+def comment_delete(request):
+    pk = request.POST.get('pk')
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.method == 'POST' and request.user == comment.author:
+        comment.delete()
+        message = '삭제완료'
+        status = 1
+    
+    else:
+        message = '잘못된 접근입니다'
+        status = 0
+        
+    return HttpResponse(json.dumps({'message': message, 'status': status, }), content_type="application/json")
