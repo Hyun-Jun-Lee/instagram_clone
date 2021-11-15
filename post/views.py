@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 import json
-from .models import Post
+from .models import Post, Comment
 from .forms import PostForm
 # Create your views here.
 
