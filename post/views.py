@@ -18,11 +18,17 @@ def post_list(request):
     if request.user.is_authenticated:
         username = request.user
         user = get_object_or_404(get_user_model(), username=username)
-        user_profile = user.profile        
+        user_profile = user.profile
+        
+        # following한 사람들의 피드 받아오기
+        follow_set = request.user.profile.get_following
+        follow_post_list = Post.objects.filter(author__profile__in=follow_set)
+        
         return render(request, 'post/post_list.html', {
             'user_profile': user_profile,
             'posts': posts,
             'comment_form': comment_form,
+            'follow_post_list': follow_post_list,
         })
     # 로그인상태가 아니면 post 내용만 보이도록
     else:
