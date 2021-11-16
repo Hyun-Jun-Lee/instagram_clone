@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from .models import Post, Like, Bookmark, Comment
+from .models import Post, Like, Bookmark, Comment, Tag
 
 # Register your models here.
 
@@ -45,4 +45,8 @@ class LikeAdmin(admin.ModelAdmin):
 class BookmarkAdmin(admin.ModelAdmin):
     list_display = ['id', 'post', 'user', 'created_at']
     list_display_links = ['post', 'user']    
+    
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['name']
     
