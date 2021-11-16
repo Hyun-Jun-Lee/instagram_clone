@@ -56,7 +56,14 @@ def post_list(request, tag=None):
                 'posts': posts,
                 'comment_form': comment_form,
         })
-        
+            
+        # post_list로 POST 요청이 오면, 검색어 tag외에 필요없는 문자를 제거한 tag_cloan으로 바꾸고 \
+            # 이를 추가한 post_search url로 연결
+        if request.method == 'POST':
+            tag = request.POST.get('tag')
+            tag_clean = ''.join(e for e in tag if e.isalnum())
+            return redirect('post:post_search', tag_clean)     
+           
         return render(request, 'post/post_list.html', {
             'user_profile': user_profile,
             'posts': posts,
@@ -64,6 +71,7 @@ def post_list(request, tag=None):
             'follow_post_list': follow_post_list,
         })
         
+
         
     # 로그인상태가 아니면 post 내용만 보이도록
     else:
