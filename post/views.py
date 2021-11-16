@@ -80,6 +80,16 @@ def post_list(request, tag=None):
             'comment_form': comment_form,
         })
 
+# post_list 축소판 느낌
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    comment_form = CommentForm()
+    
+    return render(request, 'post/post_detail.html', {
+        'comment_form': comment_form,
+        'post': post,
+    })
+
 @login_required  
 def post_new(request):
     if request.method == 'POST':

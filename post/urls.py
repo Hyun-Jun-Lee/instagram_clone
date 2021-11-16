@@ -13,5 +13,6 @@ urlpatterns = [
     path('comment/new/', views.comment_new, name="comment_new"),
     path('comment/delete/', views.comment_delete, name="comment_delete"),
     path('explore/tags/<tag>/', views.post_list, name='post_search'),
+    path('<int:pk>/', views.post_detail, name="post_detail")
     
 ]
