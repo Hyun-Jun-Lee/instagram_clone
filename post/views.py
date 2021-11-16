@@ -7,6 +7,7 @@ from django.contrib import messages
 import json
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 # Create your views here.
 
 def post_list(request):
@@ -24,12 +25,31 @@ def post_list(request):
         follow_set = request.user.profile.get_following
         follow_post_list = Post.objects.filter(author__profile__in=follow_set)
         
+        paginator = Paginator(post_list, 3)
+        page_num = request.POST.get('page')
+        
+        try:
+            posts = paginator.page(page_num)
+        except PageNotAnInteger: # page 파라미터가 int가 아니면 page(1)로 바꿈
+            posts = paginator.page(1)
+        except EmptyPage:
+            posts = paginator.page(paginator.num_pages)
+        
+        # Ajax 통신이 들어왔을 때 동작(무한스크롤 가능하도록)
+        if request.is_ajax(): 
+            return render(request, 'post/post_list_ajax.html', {
+                'posts': posts,
+                'comment_form': comment_form,
+        })
+        
         return render(request, 'post/post_list.html', {
             'user_profile': user_profile,
             'posts': posts,
             'comment_form': comment_form,
             'follow_post_list': follow_post_list,
         })
+        
+        
     # 로그인상태가 아니면 post 내용만 보이도록
     else:
         return render(request, 'post/post_list.html', {
