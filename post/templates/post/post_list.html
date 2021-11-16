@@ -1,5 +1,6 @@
 {% extends "post/layout.html" %}
 {% load static %}
+{% load post_extras %}
 
 {% block head %}
 
@@ -91,7 +92,7 @@
                     <span id="bookmark-count-{{ post.id }}">북마크{{ post.bookmark_count}}개</span>
                     
                 </div>
-                
+                <!-- templatetags/post_extras.py 적용-->
                 <div class="content">{{ post|add_link|safe|linebreaksbr }}</div>
                 
                 

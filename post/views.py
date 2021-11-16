@@ -8,12 +8,27 @@ import json
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Count
+
 # Create your views here.
 
-def post_list(request):
+def post_list(request, tag=None):
     posts = Post.objects.all()
     # CommentForm html로 넘겨주기위해
     comment_form = CommentForm()
+    
+    # tag로 검색되엇을 때 tag에 해당하는 포스트만 가져오기
+    if tag:
+        # 위에서 받아온 tag를 대소문자 구분없이 tag_set_name으로 검색
+        post_list = Post.objects.filter(tag_set__name__iexact=tag) \
+        .prefetch_related('tag_set', 'like_user_set__profile', 'comment_set__author__profile',
+                            'author__profile__follower_user', 'author__profile__follower_user__from_user') \
+        .select_related('author__profile') # 1대1 관계에서만 가능
+    else: # 아니라면 모든 post
+        post_list = Post.objects.all() \
+            .prefetch_related('tag_set', 'like_user_set__profile', 'comment_set__author__profile',
+                              'author__profile__follower_user', 'author__profile__follower_user__from_user') \
+            .select_related('author__profile')
     
     # 로그인 상태이면 username 저장, user 모델 내용 확인, profile저장
     if request.user.is_authenticated:
@@ -66,6 +81,8 @@ def post_new(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
+            # post의 tag도 같이 저장
+            post.tag_save()
             messages.info(request, 'posting이 완료되었습니다')
             return redirect('post:post_list')
     else:
